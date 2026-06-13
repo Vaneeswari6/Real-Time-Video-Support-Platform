@@ -11,40 +11,8 @@ All media streams are strictly routed through our co-located server relay, and t
 
 ### System Architecture Flow (WebRTC + TURN + Canvas Mixing)
 
-```mermaid
-graph TD
-    subgraph Clients
-        Agent[Agent Browser]
-        Customer[Customer Browser]
-    end
-    
-    subgraph Server (Node.js/Express Backend)
-        Signaling[Socket.io Signaling Server]
-        TURN[node-turn Server Port 3478]
-        API[Express REST API]
-        DB[(File Database db.json)]
-        Storage[(Uploads Directory)]
-    end
+<img width="1091" height="905" alt="image" src="https://github.com/user-attachments/assets/a16e1bf7-94cf-443c-83da-0382c9cec2e8" />
 
-    Agent <-- Signaling Handshake --> Signaling
-    Customer <-- Signaling Handshake --> Signaling
-    
-    Agent -- Encrypted Media (relay only) --> TURN
-    Customer -- Encrypted Media (relay only) --> TURN
-    TURN -- Relay Packets --> Agent
-    TURN -- Relay Packets --> Customer
-    
-    subgraph Client-Side Recording (Agent Only)
-        Mixer[Canvas & Web Audio Mixer]
-        Recorder[MediaRecorder]
-    end
-    
-    Agent -- WebRTC Tracks --> Mixer
-    Mixer --> Recorder
-    Recorder -- WebM Blob POST --> API
-    API --> Storage
-    API --> DB
-```
 
 ### Technical Design Choices
 
