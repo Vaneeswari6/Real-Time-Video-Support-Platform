@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AtomQuest Support - Operations & Observability Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-chart-line"></i></div>
+      <span>Ops & Observability Control</span>
+    </div>
+    <div class="header-actions">
+      <a href="/index.html" class="btn btn-secondary"><i class="fa-solid fa-headset"></i> Agent Console</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="dashboard-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Operations Dashboard</h1>
+        <p style="color: var(--color-text-muted);">Real-time monitoring, live session tracking, and system audit logs.</p>
+      </div>
+      <button id="refreshMetricsBtn" class="btn btn-primary">
+        <i class="fa-solid fa-rotate"></i> Refresh Metrics
+      </button>
+    </div>
+
+    <!-- Observability metrics block -->
+    <section class="admin-metrics">
+      <div class="glass-panel metric-card">
+        <div class="metric-label">Active Sessions</div>
+        <div id="activeSessionsVal" class="metric-value">0</div>
+        <div style="font-size: 0.8rem; color: var(--accent-emerald);"><i class="fa-solid fa-pulse fa-circle-play"></i> Live Relay Active</div>
+      </div>
+      <div class="glass-panel metric-card">
+        <div class="metric-label font-title">Connected Users</div>
+        <div id="connectedParticipantsVal" class="metric-value">0</div>
+        <div style="font-size: 0.8rem; color: var(--accent-blue);"><i class="fa-solid fa-users"></i> Streaming via TURN</div>
+      </div>
+      <div class="glass-panel metric-card">
+        <div class="metric-label">Total Historical Sessions</div>
+        <div id="totalSessionsVal" class="metric-value">0</div>
+        <div style="font-size: 0.8rem; color: var(--color-text-muted);"><i class="fa-solid fa-box-archive"></i> Sessions Saved</div>
+      </div>
+      <div class="glass-panel metric-card">
+        <div class="metric-label">System Health / Error Rate</div>
+        <div id="healthRateVal" class="metric-value">0%</div>
+        <div id="healthRateLabel" style="font-size: 0.8rem; color: var(--accent-emerald);"><i class="fa-solid fa-shield-halved"></i> All Systems Nominal</div>
+      </div>
+    </section>
+
+    <!-- Main Live Monitoring Area -->
+    <div class="admin-grid">
+      <!-- Active Sessions Monitor -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Live Session Manager</h2>
+          <span class="badge badge-active"><i class="fa-solid fa-tower-broadcast"></i> Live</span>
+        </div>
+        <div class="panel-body">
+          <div id="liveSessionsList" class="history-list">
+            <!-- Dynamic entries -->
+            <div style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+              <p>No active support calls at the moment.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- System Events Logger -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>System Audit Log</h2>
+          <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass);"><i class="fa-solid fa-list-check"></i> Events</span>
+        </div>
+        <div class="panel-body">
+          <div id="logTicker" class="log-ticker">
+            <div style="color: var(--color-text-muted); text-align: center; margin-top: 5rem;">
+              Waiting for system logs...
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

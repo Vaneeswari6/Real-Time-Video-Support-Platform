@@ -1,0 +1,6 @@
+node_modules/
+data/db.json
+uploads/recording-*
+uploads/chatFile-*
+.DS_Store
+.env

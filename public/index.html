@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AtomQuest Support - Agent Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-headset"></i></div>
+      <span>AtomQuest Support</span>
+    </div>
+    <div class="header-actions">
+      <a href="/admin.html" class="btn btn-secondary"><i class="fa-solid fa-chart-line"></i> Ops Dashboard</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="dashboard-header" style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Agent Control Center</h1>
+      <p style="color: var(--color-text-muted);">Manage real-time video support sessions, invite customers, and access recordings.</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Create Session Panel -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Create Support Session</h2>
+          <span class="badge badge-agent"><i class="fa-solid fa-user-shield"></i> Agent Role</span>
+        </div>
+        <div class="panel-body">
+          <form id="createSessionForm">
+            <div class="form-group">
+              <label for="agentName">Agent Identity / Name</label>
+              <input type="text" id="agentName" class="form-control" placeholder="e.g., Support Agent Alex" required value="Support Agent Alex">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <i class="fa-solid fa-plus-circle"></i> Generate Session Invite
+            </button>
+          </form>
+
+          <div id="inviteResult" class="invite-box" style="display: none;">
+            <h3 style="font-size: 1rem; margin-bottom: 0.75rem; color: #fff;">Invite Details Generated!</h3>
+            
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label>Customer Invite Link</label>
+              <div class="invite-url-container">
+                <div id="inviteUrl" class="form-control invite-url"></div>
+                <button id="copyInviteBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;" title="Copy to clipboard">
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label>Invite Token</label>
+              <div id="inviteToken" class="form-control" style="font-family: monospace; font-size: 0.85rem; padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.25);"></div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <a id="joinAgentCallBtn" class="btn btn-success" style="flex: 1;">
+                <i class="fa-solid fa-phone"></i> Launch Session
+              </a>
+            </div>
+
+            <!-- Testing tip card added for cross-device support (Ngrok/HTTPS) -->
+            <div class="glass-panel" style="margin-top: 1.25rem; padding: 1rem; background: rgba(59, 130, 246, 0.07); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px; font-size: 0.8rem; line-height: 1.45;">
+              <span style="color: var(--accent-blue); font-weight: 600; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
+                <i class="fa-solid fa-circle-info"></i> Testing with friends on other devices?
+              </span>
+              <p style="color: var(--color-text-muted);">
+                Web browsers strictly restrict camera and microphone permissions to secure contexts (<code>https://</code> or <code>localhost</code>). 
+                To test calls across different devices or over the internet, run a tunnel like <strong>Ngrok</strong> (<code>ngrok http 3000</code>) to generate a secure public HTTPS URL.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Panel -->
+      <section class="glass-panel">
+        <div class="panel-header">
+          <h2>Session History</h2>
+          <button id="refreshHistoryBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+        <div class="panel-body">
+          <div id="historyList" class="history-list">
+            <div style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+              <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+              <p>Loading history...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

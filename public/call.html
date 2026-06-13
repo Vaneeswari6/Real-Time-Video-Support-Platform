@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Video Support Session</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Reconnect / Connecting Overlay -->
+  <div id="loadingOverlay" class="overlay show">
+    <div class="spinner"></div>
+    <div style="text-align: center;">
+      <h2 id="overlayTitle" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Initializing Media Devices...</h2>
+      <p id="overlayMessage" style="color: var(--color-text-muted);">Please grant microphone and camera permissions when prompted.</p>
+    </div>
+    <div id="joinCredentialsBox" class="glass-panel" style="display: none; padding: 1.5rem; margin-top: 1rem; width: 320px;">
+      <h3 style="font-size: 1rem; margin-bottom: 1rem; text-align: center;">Enter Your Name</h3>
+      <form id="joinForm">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <input type="text" id="usernameInput" class="form-control" placeholder="Your Name" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Join Call</button>
+      </form>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-headset"></i></div>
+      <span>AtomQuest Session</span>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+      <div id="callTimer" style="font-family: monospace; font-size: 1.1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-regular fa-clock"></i> <span>00:00</span>
+      </div>
+      
+      <div id="recordingStatusBadge" class="recording-indicator" style="display: none;">
+        <div class="recording-dot"></div>
+        <span>REC</span>
+      </div>
+
+      <div id="roleBadge">
+        <!-- Will be filled dynamically -->
+      </div>
+    </div>
+  </header>
+
+  <main class="call-container">
+    <!-- Video Streams Area -->
+    <section class="video-area">
+      <div id="videoGrid" class="video-grid single-video">
+        <!-- Local Stream Video -->
+        <div id="localVideoWrapper" class="video-wrapper">
+          <video id="localVideo" autoplay playsinline muted></video>
+          <div class="video-info-overlay">
+            <span id="localLabel">You</span>
+            <span id="localMicStatus"><i class="fa-solid fa-microphone"></i></span>
+            <span id="localCamStatus"><i class="fa-solid fa-video"></i></span>
+          </div>
+          <!-- Placeholder avatar if video is off -->
+          <div id="localPlaceholder" class="video-placeholder" style="display: none;">
+            <div class="placeholder-avatar">U</div>
+            <div class="placeholder-text">Camera is off</div>
+          </div>
+        </div>
+
+        <!-- Remote Stream Video -->
+        <div id="remoteVideoWrapper" class="video-wrapper" style="display: none;">
+          <video id="remoteVideo" autoplay playsinline></video>
+          <div class="video-info-overlay">
+            <span id="remoteLabel">Customer</span>
+            <span id="remoteMicStatus"><i class="fa-solid fa-microphone"></i></span>
+            <span id="remoteCamStatus"><i class="fa-solid fa-video"></i></span>
+          </div>
+          <div id="remotePlaceholder" class="video-placeholder">
+            <div class="placeholder-avatar"><i class="fa-solid fa-spinner fa-spin"></i></div>
+            <div class="placeholder-text">Waiting for participant...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Row -->
+      <div class="control-bar">
+        <button id="toggleMicBtn" class="btn-control" data-tooltip="Toggle Microphone">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <button id="toggleCamBtn" class="btn-control" data-tooltip="Toggle Camera">
+          <i class="fa-solid fa-video"></i>
+        </button>
+        <button id="screenShareBtn" class="btn-control" data-tooltip="Share Screen">
+          <i class="fa-solid fa-desktop"></i>
+        </button>
+        
+        <!-- Agent-only Recording Button -->
+        <button id="recordCallBtn" class="btn-control" data-tooltip="Record Call" style="display: none; background: rgba(239, 68, 68, 0.08); color: var(--accent-red); border-color: rgba(239, 68, 68, 0.25);">
+          <i class="fa-solid fa-record-vinyl"></i>
+        </button>
+
+        <button id="toggleChatBtn" class="btn-control" data-tooltip="Toggle Chat Sidebar" style="position: relative;">
+          <i class="fa-solid fa-comments"></i>
+          <span id="unreadDot" style="display: none; position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: var(--accent-pink); border-radius: 50%;"></span>
+        </button>
+
+        <!-- Red Hangup button -->
+        <button id="hangUpBtn" class="btn-control active" data-tooltip="End Session">
+          <i class="fa-solid fa-phone-slash"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Chat Sidebar -->
+    <section id="chatPanel" class="chat-panel">
+      <div class="chat-header">
+        <h2 style="font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-comments" style="color: var(--accent-indigo);"></i> In-Call Chat
+        </h2>
+        <span id="participantCount" class="badge" style="background: rgba(255,255,255,0.05); color: var(--color-text-muted); border: 1px solid var(--border-glass);">
+          <i class="fa-solid fa-users"></i> 1 Connected
+        </span>
+      </div>
+
+      <div id="chatMessages" class="chat-messages">
+        <!-- Messages go here -->
+      </div>
+
+      <div class="chat-input-area">
+        <div id="uploadProgress" style="display: none; font-size: 0.8rem; color: var(--accent-blue); margin-bottom: 0.25rem;">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Uploading file...
+        </div>
+        <div class="chat-input-row">
+          <button id="attachFileBtn" class="btn btn-secondary" style="padding: 0 0.8rem;" data-tooltip="Attach Document / Photo">
+            <i class="fa-solid fa-paperclip"></i>
+          </button>
+          <input type="file" id="fileInput" class="hidden-file-input">
+          <input type="text" id="chatMessageInput" class="form-control chat-input" placeholder="Type a message..." autocomplete="off">
+          <button id="sendChatBtn" class="btn btn-primary" style="padding: 0 1.2rem;" data-tooltip="Send Message">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Script Imports -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/call.js"></script>
+</body>
+</html>
