@@ -484,17 +484,23 @@ function updateRemotePlaceholder(name, role) {
   updateParticipantCount(2);
 }
 
-// --- WEBRTC PROTOCOL SETUP & RACE CONDITION HANDLING ---
+// --- WEBRTC CONFIG & LOOPBACK COMPATIBILITY ---
 
+// WebRTC loopback is protected in some browsers on localhost if 'relay' only policy is set.
+// We dynamically permit direct candidates on localhost, but strictly enforce TURN relay for external addresses!
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const pcConfig = {
   iceServers: [
     {
-      urls: `turn:${window.location.hostname}:3478`,
+      urls: 'stun:stun.l.google.com:19302'
+    },
+    {
+      urls: `turn:${isLocal ? '127.0.0.1' : window.location.hostname}:3478`,
       username: 'supportagent',
       credential: 'supportpass'
     }
   ],
-  iceTransportPolicy: 'relay'
+  iceTransportPolicy: isLocal ? 'all' : 'relay'
 };
 
 function createPeerConnection(targetSocketId) {
@@ -502,10 +508,9 @@ function createPeerConnection(targetSocketId) {
     peerConnection.close();
   }
 
-  console.log('Creating RTCPeerConnection');
+  console.log('Creating RTCPeerConnection with config:', pcConfig);
   peerConnection = new RTCPeerConnection(pcConfig);
   
-  // Reset ICE queuing states
   remoteDescriptionSet = false;
   queuedCandidates = [];
 
@@ -518,13 +523,11 @@ function createPeerConnection(targetSocketId) {
   peerConnection.ontrack = (event) => {
     console.log('Received remote track:', event.track.kind);
     
-    // Create new remote MediaStream if not already set
     if (!remoteStream) {
       remoteStream = new MediaStream();
       remoteVideo.srcObject = remoteStream;
     }
     
-    // Append the track
     if (!remoteStream.getTracks().some(t => t.id === event.track.id)) {
       remoteStream.addTrack(event.track);
     }
@@ -828,7 +831,6 @@ function toggleRecording() {
 }
 
 function startCanvasAudioMixing() {
-  // 1. Audio Mixing
   audioContext = new (window.AudioContext || window.webkitAudioContext)();
   audioDestNode = audioContext.createMediaStreamDestination();
 
@@ -842,7 +844,6 @@ function startCanvasAudioMixing() {
     remoteAudioSource.connect(audioDestNode);
   }
 
-  // 2. Video Mixing (Canvas)
   canvasElement = document.createElement('canvas');
   canvasElement.width = 1280;
   canvasElement.height = 720;
@@ -952,13 +953,6 @@ function startTimer() {
     const secs = String(callDurationSeconds % 60).padStart(2, '0');
     callTimer.querySelector('span').textContent = `${mins}:${secs}`;
   }, 1000);
-}
-
-function stopTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
 }
 
 // --- IN-CALL CHAT & FILE UPLOAD ---
